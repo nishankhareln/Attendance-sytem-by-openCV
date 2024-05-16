@@ -10,7 +10,7 @@ print('-----------------------------------------------------\n')
 
 # Read all images
 people = glob(const.PEOPLE_DIR + '/*.*')
-print(f"Number of files in '{const.PEOPLE_DIR}' directory: {len(people)}")
+print(f"Number of files in '{const.PEOPLE_DIR}' directory : {len(people)}")
 
 # Get images
 images = list(map(utility.get_images, people))
@@ -18,16 +18,12 @@ images = list(map(utility.get_images, people))
 # Get encodings of face, if not found print the file name
 face_encode = []
 is_face_found = True
-index = None  # Initialize index outside the loop
 print('Encoding faces...')
 for index, img in enumerate(tqdm(images)):
     try:
-        encodings = fr.face_encodings(img, num_jitters=const.n_face_encoding_jitters)
-        if not encodings:
-            raise fr.FaceEncodingError("Face not found")
-        face_encode.append(encodings[0])
-    except (IndexError, fr.FaceEncodingError) as e:
-        print(f"Face not found in file: {people[index]}, replace it.")
+        face_encode.append(fr.face_encodings(img, num_jitters=const.n_face_encoding_jitters)[0])
+    except Exception as e:
+        print(f"Face not found in file : {people[index]}, replace it.")
         is_face_found = False
         break
 
@@ -36,9 +32,9 @@ if is_face_found:
 
     # Save Face encoding
     np.save('assets/face_encodings/data.npy', face_encode)
-    print(f"Data saved for {index + 1} images...")
+    print(f"Data saved for {index+1} images...")
 
-    # Saving pickle file for the number of files
+    # Saving pickle file for number of files
     with open('assets/pickles/n_people.pk', 'wb') as pickle_file:
         pickle.dump(len(people), pickle_file)
     print('Pickle file saved...')
